@@ -36,7 +36,7 @@ likelihood = 0;
 %last_social_action = 0; 
 %last_participant_action = 0; 
 
-T =  [.7 .3; .3 .7];
+T =  [.8 .2; .8 .2];
 N = size(c1_list,1);
 
 results = zeros(N,8); 
@@ -134,3 +134,4 @@ for i=1:N
     end 
 end 
 end 
+

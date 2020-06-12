@@ -39,20 +39,6 @@ Q_MF = zeros(numStates, numActions);
 
 %Loop through trials
 for i=1:N
-    
-    % HANDLE TIMEOUTS 
-        if (c1(i) <1)
-            continue
-        end 
-
-        if (c2(i) <1)
-            continue
-        end 
-
-
-        if (s2(i) <1)
-            continue
-        end
         
     if turn(i)==1 %participant turns 
          
@@ -106,4 +92,6 @@ for i=1:N
 
     end    
 end 
+
+likelihood = -likelihood;
 end 

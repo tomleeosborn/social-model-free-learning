@@ -7,23 +7,21 @@ path = "study_1_single_player_data.csv";
 df = readtable(path);
 df = table2array(df);
 
-%bad agents ids to exclude (timed out)
-bad.df =  readtable('bad_agents.csv');
-bad.df = table2array(bad.df);
-
-numRounds = 250;
+numRounds = 125;
 
 %variables for indexing data
 user_id =1;
-action1 = 3;
-action2 = 5;
-state2 = 8;
-reward = 6;
-rew1 = 9;
-rew2 = 10;
-rew3 = 11;
-rew4 = 12; 
-social_data = zeros(numRounds, 8); 
+action1 = 2;
+state2 = 3;
+action2 = 4;
+reward = 5;
+rew1 = 6;
+rew2 = 7;
+rew3 = 8;
+rew4 = 9; 
+
+social_data = zeros(numRounds, 9); 
+
 %find number of subjects
 numSubs = length(unique(df(:,user_id))); 
 
@@ -31,12 +29,6 @@ numSubs = length(unique(df(:,user_id)));
 
 %randomly choose participant
 assigned_id = randsample(numSubs, 1);
-
-%check if bad id
-
-while ismember(assigned_id,bad.df)
-    assigned_id = randsample(numSubs, 1);
-end 
 
 agent_data = df(df(:,user_id)==assigned_id,:); %load social data
 

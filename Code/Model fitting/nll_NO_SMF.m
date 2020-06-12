@@ -104,4 +104,5 @@ for i=1:N
 
     end    
 end 
+likelihood = -likelihood;
 end 
