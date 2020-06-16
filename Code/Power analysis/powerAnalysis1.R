@@ -89,7 +89,7 @@ model <- glmer(repeated ~ rewarded * common +
                         (1 + rewarded * common|subject) + (1|matched_player_id), 
                       data = df,family = binomial)
 summary(model)
-model2 <- extend(model, within = "rewarded,common", n=10000)
+model2 <- extend(model, within = "rewarded,common", n=5000)
 model2.data <- getData(model2)
 
 model_extended <-  glmer(repeated ~ rewarded * common + 
@@ -101,8 +101,35 @@ doTest(model, fcompare(~rewarded))
 
 model_sim <- powerSim(model, nsim = 100, test = fcompare(~rewarded))
 
+model_sim
 model_pc1 <- powerCurve(model_extended, test =  fcompare(~rewarded),  within = "rewarded,common",
-                         breaks=c(100, 500, 1000, 2000, 3000, 5000, 76000, 10000), seed = 123, nsim= 10)
+                        breaks=c(100, 500, 1000, 2000, 3000, 5000, 76000, 10000), seed = 123, nsim= 5)
 
 plot(model_pc1)
+
+
+fixef(model)['rewarded'] <- 0.5 #change effect size ot 9.5
+model_sim2 <- powerSim(model, nsim = 100, test = fcompare(~rewarded))
+model_extension2 <- extend(model, within = "rewarded,common", n=5000)
+model_extension2_data <- getData(model_extension2)
+
+model_extended2 <-  glmer(repeated ~ rewarded * common + 
+                           (1 + rewarded * common|subject) + (1|matched_player_id), 
+                         data = model_extension2_data, family = binomial)
+
+model_pc2 <- powerCurve(model_extended2, test =  fcompare(~rewarded+common),  
+                        within = "rewarded,common",
+                        breaks=c(10, 100, 500, 1000, 2000, 3000, 5000, 76000, 10000), seed = 123, nsim= 100)
+
+plot(model_pc2)
+
+
+#power analysis for exploratory analysis of AIC values
+
+library(pwr)
+
+power.t.test(d=.2, power = .8, alternative = "one.sided", type = 'paired')
+
+
+
                       
