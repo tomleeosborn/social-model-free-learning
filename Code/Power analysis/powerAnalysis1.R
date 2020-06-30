@@ -85,35 +85,31 @@ df <- df %>%
 
 ##NOW BUILD A MIXED EFFECT MODEL 
 
-model <- glmer(repeated ~ rewarded + common + cXr +
+model1 <- glmer(repeated ~ rewarded + common + cXr +
                  (1 + rewarded + common + cXr|subject) + (1|matched_player_id), 
                data = df,family = binomial)
 
-summary(model)
-model.extend <- extend(model, within = 'rewarded,common', n = 5000)
+summary(model1)
 
-model.extended.data <- getData(model.extend)
+#extend to 500 subjects
+model2 <- extend(model1, along = "subject", n = 500)
 
-model_extended <-  glmer(repeated ~ rewarded + common + cXr +
-                           (1 + rewarded + common + cXr|subject) + (1|matched_player_id), 
-                         data = model.extended.data,family = binomial)
+df1 <- getData(model2)
+table(df1$subject)
+pc1 <- powerCurve(model2, along  = "subject", nsim=100, breaks = c(0,10,20,30,40,50,75,100,
+                                                                   125,250,300,450,500))
 
-summary(model_extended)
-doTest(model_extended, fcompare(~rewarded))
+df.sims <- read_csv('power.sim.results.csv')               
 
-model_sim <- powerSim(model, nsim = 100, test = fcompare(~rewarded))
+df.sims %>%
+  ggplot(aes(x = subject, y=power)) +
+  geom_line() + 
+  geom_errorbar(
+    aes(ymin = lb, ymax = up),
+    width = .2,
+    position = position_dodge(width = .9)
+  ) + scale_x_continuous( breaks = c(0,10,20,30,40,50,75,100,
+                                     125,250,300,450,500))
+  
 
-model_pc<- powerCurve(model_extended, test =  fcompare(~rewarded),  within = "rewarded,common",
-                        breaks=c(100, 500, 1000, 2000, 3000, 4000, 5000), seed = 123, nsim= 100)
-
-plot(model_pc)
-
-#power analysis for exploratory analysis of AIC values
-
-library(pwr)
-
-power.t.test(d=.2, power = .8, alternative = "one.sided", type = 'paired')
-
-
-
-                      
+view(df.sims)
