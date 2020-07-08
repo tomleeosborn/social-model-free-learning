@@ -1,0 +1,347 @@
+/*
+ * CSS for jsPsych experiments.
+ *
+ * This stylesheet provides minimal styling to make jsPsych
+ * experiments look polished without any additional styles.
+ */
+
+ @import url(https://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700);
+
+ html {
+  font-family: 'Open Sans', 'Arial', sans-serif;
+  font-size: 18px;
+  line-height: 1.6em;
+ }
+ 
+ body {
+   margin: 0;
+   padding: 0;
+   text-align: center;
+   
+ }
+ 
+ p {
+     clear:both;
+ }
+ 
+ .very-small {
+     font-size: 50%;
+ }
+ 
+ .small {
+     font-size: 75%;
+ }
+ 
+ .large {
+     font-size: 125%;
+ }
+ 
+ .very-large {
+     font-size: 150%;
+ }
+ 
+ 
+ @font-face {
+     font-family: digitalDisplay;
+     src: url('../../fonts/digital-7.otf');
+   src: url('../../fonts/digital-7.otf') format('otf'), url('../../fonts/digital-7.eot?#iefix') format('embedded-opentype'), url('../../fonts/digital-7.woff') format('woff');
+ }
+ 
+/* Container holding jsPsych content */
+
+ .jspsych-display-element {
+   width: 800px;
+   /*margin: auto auto auto auto;*/
+   background-repeat: no-repeat;
+   background-position: center;
+   height: 400px;
+ }
+
+ .jspsych-display-element:focus {
+   outline: none;
+ }
+
+ .jspsych-content-wrapper {
+   display: flex;
+   margin: auto;
+   flex: 1 1 100%;
+   width: 100%;
+ }
+
+ .jspsych-content {
+   max-width: 95%; /* this is mainly an IE 10-11 fix */
+   text-align: center;
+   margin: auto; /* this is for overflowing content */
+ }
+
+ .jspsych-top {
+   align-items: flex-start;
+ }
+
+ .jspsych-middle {
+   align-items: center;
+ }
+
+/* fonts and type */
+
+.jspsych-display-element {
+  font-family: 'Open Sans', 'Arial', sans-serif;
+  font-size: 18px;
+  line-height: 1.6em;
+}
+
+/* Form elements like input fields and buttons */
+
+.jspsych-display-element input[type="text"] {
+  font-family: 'Open Sans', 'Arial', sans-serif;
+  font-size: 14px;
+}
+
+/* borrowing Bootstrap style for btn elements, but combining styles a bit */
+.jspsych-btn {
+  display: inline-block;
+  padding: 6px 12px;
+  margin: 0px;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: 'Open Sans', 'Arial', sans-serif;
+  cursor: pointer;
+  line-height: 1.4;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+}
+
+.jspsych-btn:hover {
+  background-color: #ddd;
+  border-color: #aaa;
+}
+
+.jspsych-btn:disabled {
+  background-color: #eee;
+  color: #aaa;
+  border-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* jsPsych progress bar */
+
+#jspsych-progressbar-container {
+  color: #555;
+  border-bottom: 1px solid #dedede;
+  background-color: #f9f9f9;
+  margin-bottom: 1em;
+  text-align: center;
+  padding: 8px 0px;
+  width: 100%;
+  line-height: 1em;
+}
+#jspsych-progressbar-container span {
+  font-size: 14px;
+  padding-right: 14px;
+}
+#jspsych-progressbar-outer {
+  background-color: #eee;
+  width: 50%;
+  margin: auto;
+  height: 14px;
+  display: inline-block;
+  vertical-align: middle;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+#jspsych-progressbar-inner {
+  background-color: #aaa;
+  width: 0%;
+  height: 100%;
+}
+
+/* Control appearance of jsPsych.data.displayData() */
+#jspsych-data-display {
+  text-align: left;
+}
+
+/* *
+ *
+ * PLUGIN: jspsych-daw-stim
+ *
+ */
+#jspsych-daw-stim-stimulus {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#jspsych-daw-stim-stimulus-1 {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+#jspsych-daw-stim-stimulus-2 {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/*
+ *
+ * PLUGIN: jspsych-space-daw-stim
+ *
+ */
+
+#jspsych-space-daw-top-multiplier {
+	display: inline-block;
+	margin-top: 35px;
+	margin-bottom: 35px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 10px;
+/*	width: 302px;
+	height: 100px;
+	padding-left: 20px*/
+	font-family: digitalDisplay;
+	color:#b8fff6;
+	background-color:#0738db;
+	border: 5px solid #197bff;
+	border-radius: 10px;
+	font-size: 200%;
+}
+#jspsych-space-daw-top-text-multiplier,#jspsych-space-daw-bottom-text-multiplier {	
+	display: inline-block;
+	width: 200px;
+	height: 50px;
+	text-align: left;
+	vertical-align: top;
+	line-height: 50px;
+}
+#jspsych-space-daw-bottom-number-1-multiplier {
+	display: inline-block;
+	width: 50px;
+	height: 50px;
+	background-color: #197bff;
+	border-radius: 10px;
+	line-height: 50px;
+	vertical-align: top;
+	color:#d31820;
+}
+#jspsych-space-daw-top-number-1-multiplier {
+	display: inline-block;
+	width: 50px;
+	height: 50px;
+	background-color: #197bff;
+	border-radius: 10px;
+	line-height: 50px;
+	vertical-align: top;
+	color:#007236;
+}
+#jspsych-space-daw-bottom-number-2-multiplier,#jspsych-space-daw-top-number-2-multiplier{
+	display: inline-block;
+	width: 25px;
+	height: 50px;
+}
+
+#jspsych-space-daw-top-rewards {
+	display: inline-block;
+	margin-top: 35px;
+	margin-bottom: 35px;
+	padding-top: 20px;
+	padding-bottom: 20px;
+	padding-left: 10px;
+	padding-right: 10px;
+	font-family: digitalDisplay;
+	color:#b8fff6;
+	background-color:#0738db;
+	border: 5px solid #197bff;
+	border-radius: 10px;
+	font-size: 200%;
+	align: center;
+	
+}
+#jspsych-space-daw-top-rewards-container {	
+	display: inline-block;
+	width: 200px;
+	height: 50px;
+	background-color: #197bff;
+	border-radius: 10px;
+	line-height: 50px;
+	vertical-align: middle;
+}
+img {
+    vertical-align: middle;
+}
+
+#jspsych-space-daw-top-rewards-text {
+	display: inline-block;
+	height: 50px;
+	padding-left: 10px;
+	line-height: 50px;
+	vertical-align: top;
+}
+
+
+#jspsych-space-daw-top-stim-left, #jspsych-space-daw-top-stim-right {
+	display: inline-block;
+	width: 170px;
+	height: 50px;
+	padding-top: 150px;
+	background-repeat: no-repeat;
+	background-position: center bottom;
+}
+
+#jspsych-space-daw-top-stim-middle {
+	display: inline-block;
+	width: 65px;
+	height: 50px;
+	padding-top: 150px;
+	background-repeat: no-repeat;
+	background-position: center bottom;
+}
+
+#jspsych-space-daw-bottom-stim-left, #jspsych-space-daw-bottom-stim-right {
+	position: relative;
+	display: inline-block;
+	width: 170px;
+	height: 170px;
+	background-repeat: no-repeat;
+	background-position: center bottom;
+	border-width: 4px;
+	border-style: dashed;
+	border-color: rgba(0, 0, 0, 0);
+	font-size: 500%;
+}
+.jspsych-space-daw-bottom-stim-border:after {
+    content: '';
+    position: absolute;
+	width: 170px;
+	height: 170px;
+	left: -4px;
+	top: -4px;
+    border-style: solid;
+  	border-width: 4px;
+	border-color: rgba(255,255,255,1);
+    z-index: -1;  /* to be below the parent element */
+}
+
+#jspsych-space-daw-bottom-stim-middle {
+	display: inline-block;
+	width: 65px;
+	height: 170xpx;
+	background-repeat: no-repeat;
+	background-position: center bottom;
+}
+
+#myProgress {
+  width: 100%;
+  background-color: grey;
+}
+
+#myBar {
+  width: 1%;
+  height: 30px;
+  background-color: green;
+}

@@ -1,0 +1,48 @@
+<style>
+	div {
+
+	padding-right: 50px;
+	padding-left: 50px; 
+	padding-bottom:50px;
+
+} 
+button {
+	background-color:#555555;
+	color: white; 
+	padding: 15px 32px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block; 
+	font-size: 16px;}
+</style>
+
+
+<div id="consent" align=center>
+
+<p align=center>
+						<br>
+						<br>
+		Please enter your Amazon Mechanical Turk Worker ID below. <br> <br> 
+		If you do not enter it accurately, we will not be able to pay you.
+
+		<p>
+				<input type="text" id="workerIDtext" size="40"/><br><br>
+				<button type="button" id="start">Start </button>
+		</p>
+		
+</p> 
+
+
+</div>
+
+<script>
+var worker_id = function(){
+	var worker_id = document.getElementById('workerIDtext').value
+	console.log(worker_id);
+	return worker_id; 
+}
+
+
+worker_id()
+
+</script>

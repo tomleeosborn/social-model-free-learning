@@ -1,0 +1,645 @@
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Harvard University HIT</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="./jspsych.js"></script>
+	<script src="./jspsych/plugins/jspsych-call-function.js"></script>
+	<script src="./jspsych/plugins/jspsych-html-keyboard-response.js"></script>
+	<script src="./jspsych/plugins/jspsych-social-learning.js"></script>
+	<script src="./jspsych/plugins/jspsych-survey-text.js"></script>
+	<script src="./jspsych/plugins/jspsych-external-html.js"></script>
+	<script src="./jspsych/plugins/jspsych-instructions.js"></script>
+	<script src="./jspsych/plugins/jspsych-load-opponent.js"></script>
+	<script src="./jspsych/plugins/jspsych-survey-multi-choice.js"></script>
+	<script src="./jspsych/plugins/jspsych-html-slider-response.js"></script>
+	<script src="./jspsych/plugins/jspsych-survey-likert.js"></script>
+	<script src="./jspsych/plugins/jspsych-html-slider-response.js"></script>
+	<script src="./jspsych/plugins/jspsych-survey-text.js"></script>
+	<script src="./additional-functions.js"></script>
+	<script src="./social-agent-functions.js"></script>
+	<script src="./data/social_data.js"></script>
+	<script src="./data/practice_agent_data.js"></script>
+	<link rel="stylesheet" href="./jspsych/css/jspsych.css" type="text/css">
+	<link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css"
+	rel = "stylesheet">
+</head>
+<body>
+</body>
+<script>
+
+
+	var turk_code = "ZRB8Z8UR2"; //MTURK CODE 
+	var study_version = "social_model_free_learning";  //current study versions 
+
+
+	//find the assignmentId & debugging status from the URL
+	var urlParams = parseURLParams(window.location.href);
+	var assignmentId = turk_code;
+	var debug = true;
+	if (typeof urlParams != "undefined") {
+    if (urlParams.hasOwnProperty('assignmentId')) {
+        assignmentId = urlParams.assignmentId[0];
+    }
+
+    if (urlParams.hasOwnProperty('debug')) {
+        debug = urlParams.debug[0];
+    }
+	}; 
+
+	var p_rews = [];//practice rewards
+	var rews =[];//actually rewards 
+
+	var npracticetrials_1 = null;
+	var npracticetrials_2 = null; 
+	var ntrials = null; 
+	var ptrials = null; 
+	var single_player_practice = null; 
+	var single_trials = null; 
+
+	
+	if (debug) {
+		npracticetrials_1 = 5;
+		npracticetrials_2 = 5;  
+		ntrials = 5; 
+	} else {
+		npracticetrials_1 =15;
+		npracticetrials_2 = 10; 
+		ntrials = 125; 
+	}
+
+	var sex = '';
+	var age = 0;
+	var score =0; 
+
+	var subid = '';
+	var totalreadingtime = 0; 
+
+
+/***************************-------------------------******************* */
+	// multiplayer data 
+/***************************-------------------------******************* */
+	//load social data
+	var social_data = social_data; // works  
+	console.log(social_data);
+	var partner_id = selectPartner(social_data); //works 
+	var partner_data = partnerData(social_data, partner_id); //works 
+	var playing_order = selectPlayingOrder(); //works
+	var playing_order_list = [];
+
+	if (playing_order==1){
+		for (var i = 0; i < 125; i++){
+			playing_order_list.push(1,2); 
+		}  
+		} else {
+			for (var i = 0; i < 125; i++){
+			playing_order_list.push(2,1);
+			}
+	}
+
+	// practice data 
+	practice_data = practice_agent_data;//everyone gets to practice with the same agent 
+	practice_id = 'practice_hybrid_agent_1';
+	console.log(practice_data);
+/***************************-------------------------******************* */
+	//jspsych blocks 
+/***************************-------------------------******************* */
+
+var startTime = (new Date()).getTime();
+
+/* change colors */
+var change_colors = {
+	type: 'call-function',
+	func: function() {
+			$('.jspsych-display-element').css('background-color', 'black');
+	$('.jspsych-display-element').css('color', 'white');
+	}}; 
+/* define welcome message trial */
+var welcome_block = {
+	type: "html-keyboard-response",
+	stimulus: "<br><br><br><br>Welcome to the experiment. Press any key to begin."
+};
+
+var check_id_block = function(elem) {
+	if($('#workerIDtext').val()){
+		id = $('#workerIDtext').val();
+		if (id){
+			subid=id;
+			id_trial = new Array(1);
+				id_trial[0] = {
+					subject: subid,
+					version: study_version
+				}
+				save_data(id_trial,"osborn_social_mf_subs")
+		}
+		return true; 
+	} else {
+		alert("Please provide your Amazon Mechanical Turk Worker ID.")
+	}
+	return false; 
+}
+
+var id_block = {
+	type: 'external-html',
+	url: "mturk_id.html",
+  	cont_btn: "start",
+  	check_fn: check_id_block
+}
+
+var check_consent = function(elem) {
+  if ($('#consent_checkbox').is(':checked')) {
+    return true;
+  }
+  else {
+    alert("If you wish to participate, you must check the box next to the statement 'I agree to participate in this study.'");
+    return false;
+  }
+  return false;
+};
+
+var consent_block = {
+	type: 'external-html',
+	url: 'consent.html',
+	cont_btn: 'start',
+	check_fn: check_consent 
+}
+
+//-----------------------------------------
+//instructions single player practice rounds  
+num_trials = npracticetrials_1; 
+var instructions_block_one = {
+	 type: 'instructions',
+	 pages: instructions_single_player(),
+	 show_clickable_nav: true
+ };
+
+// -----------------------------------------
+// PRACTICE LOOP ONE 
+
+ptrials = npracticetrials_1; 
+
+ // practice_one 
+ var p1 = -1;  //counter for the practice variable 
+ var practice_block_one = {
+	type: 'social-learning',
+	study_version: study_version,
+	subject_id: function() {
+		return subid}, 
+	choices: ["F","J"],
+	multiplayer_data: practice_data,
+	trial_n: function() {
+		p1 +=1; 
+		return p1; 
+	},
+	social_agent_id: partner_id,
+	practice_id: practice_id, 
+	practice: 1, 
+	social_agent_data: practice_data,
+	condition:'single', //everyone learns how to do this on their own 
+	post_trial_gap: 300,
+	init_points: 0, 
+	rews:rews,
+	score_time: 1500, 
+	feedback_time: 500, 
+	learning_time: 1500,
+	playing_order: function() {
+		return playing_order_list[p1];
+	},
+	state: 'practice_1',
+	timing_response:4000,
+	debug:debug
+	};
+
+var practice_1_loop = {
+timeline:[practice_block_one],
+loop_function: function(data){
+	if (p1 < ptrials - 1){
+		return true
+	} else {
+		return false; 
+	}
+}
+};
+
+
+// ----------------------------------------------------------
+// add multiplayer instructions here 
+practice_2_trials = npracticetrials_2; 
+
+var multiplayer_practice_block = {
+	type: 'instructions',
+	pages: instructions_multiplayer(),
+	show_clickable_nav: true
+}
+
+// multiplayer practice block
+var p2 = 25; 
+var practice_block_two = {
+	type: 'social-learning',
+	study_version: study_version,
+	choices: ["F","J"],
+	multiplayer_data: practice_data, 
+	trial_n: function() {
+		p2 +=1; 
+		return p2; 
+	},
+	social_agent_id:partner_id,
+	practice_id: practice_id,
+	subject_id: function() {
+		return subid}, 
+	social_agent_data: practice_data, 
+	condition: 'social',  
+	practice: 1, 
+	post_trial_gap: 300,
+	init_points: 0, 
+	rews:rews,
+	score_time: 1500, 
+	timeout_time:2000,
+	feedback_time: 500, 
+	learning_time: 1000,
+	playing_order: function() {
+		return playing_order_list[p2];
+	},
+	state: 'practice_2',
+	debug:debug,
+	timing_response:4000
+	};
+//loop
+npracticetrials_2 = npracticetrials_2 + p2; 
+var practice_2_loop = {
+	timeline:[practice_block_two],
+	loop_function: function(data){
+		if (p2 < npracticetrials_2){
+			return true
+		} else {
+			return false; 
+		}
+	}
+};
+
+//--------------------------------------------------
+// further instructions here 
+// first player 
+if (playing_order==1){
+	first_player = "You"; 
+} else {
+	first_player='Your partner'
+}
+
+var instructions_final_multiplayer = {
+	type: 'instructions',
+	pages: instruction_final(),
+	show_clickable_nav: true
+};
+
+//----------------------------------------------------
+// now it's primetime 
+var m = -1; 
+var multiplayer_space_block = {
+	type: 'social-learning',
+	study_version: study_version,
+	choices: ["F","J"],
+	multiplayer_data: partner_id,
+	trial_n: function() {
+		m +=1; 
+		return m; 
+	},
+	subject_id: function() {
+		return subid}, 
+		social_agent_id:partner_id,
+	practice_id: practice_id, 
+	social_agent_data: partner_data,
+	condition: 'social',  
+	post_trial_gap: 300,
+	ntrials: ntrials,
+	init_points: 20, 
+	rews:rews,
+	practice: 0, 
+	score_time: 1500, 
+	feedback_time: 500, 
+	timeout_time:2000,
+	learning_time: 1000,
+	playing_order: function() {
+		return playing_order_list[m];
+	},
+	state: 'multiplayer_level',
+	debug:debug,
+	timing_response:5000
+};
+
+var multiplayer_space_loop = {
+	timeline:[multiplayer_space_block],
+	loop_function: function(data){
+		if (m < ntrials-1){
+			return true
+		} else {
+			return false; 
+		}
+	}
+}
+
+//----------------------
+// calculate bonus 
+
+
+var calculate_bonus = {
+	type: 'call-function',
+	func: function(){
+		var lasttrialdata = jsPsych.data.getLastTrialData().values()[0];
+		score = lasttrialdata.score
+}
+};
+
+//save data 
+var save_data_block = { //THIS WORKS 
+	type: 'call-function',
+	func: function(){
+		var social_data = jsPsych.data.get().filter({trial_type:'social-learning'}).values(); 
+		console.log('data to save: ', social_data);
+		save_data(social_data, "osborn_social_mf_data");
+	}	
+}
+//--------- END OF GAME BLOCKL====================================
+var check_demographics_block = function(elem) {
+	var age_ans = $('#workerAge').val() 
+
+	var sex_ans = $('#workerSex').val()
+
+	var data = jsPsych.data.get();
+
+	
+	if(jQuery.isNumeric(age_ans) && (sex_ans == 'm' || sex_ans == 'f' || sex_ans == 'other')){
+		age = parseInt(age_ans);
+		sex = sex_ans;
+		return true; 
+	} else {
+		if (!jQuery.isNumeric(age_ans)){
+			alert("Please enter your age as a number (make sure to remove any spaces).");
+		} 
+		if (sex_ans != 'm' && sex_ans != 'f')
+			alert("Please enter your sex. Write \"f\" for female, \"m\" for male, or \"other\" for other.");
+			return false; 
+	}
+	return false; 
+}
+
+//--------- MEASURES/QUESTIONNAIRES BLOCK====================================
+var continue_block = {
+	type: "html-keyboard-response",
+	stimulus: "<br><br><br><br>You have now completed this part of the task. <br>\
+	You will now complete a brief questionnaire. This takes about 2-to-3 minutes.\
+	Press any key to continue."
+};
+
+
+
+var demographics_block = {
+	type: 'external-html',
+	url: "demographics.html",
+  	cont_btn: "continue",
+  	check_fn: check_demographics_block
+}
+
+var save_subinfo_block = { //what other data maybe useful to collect?
+	type: 'call-function',
+	func: function(){
+		var lasttrialdata = jsPsych.data.getLastTrialData().values();
+		subinfo = new Array(1);
+		console.log('score at save_sub:', score);
+		var bonus = (score / 2) / 100;
+		subinfo[0] = {
+			subject: subid,
+			version: study_version,
+			age: age,
+			sex: sex,
+			bonus: Math.max(bonus, 0),
+			assignmentId: assignmentId,
+			time_elapsed: (new Date()).getTime() - startTime
+		};
+		save_data(subinfo,"osborn_social_mf_demo");
+		console.log('sub info', subinfo);
+	}
+}
+
+
+// IRI; for sake of usability, I've divided into four sections of 7 questions each
+
+var iri_part_one = {
+	type: 'survey-likert',
+	preamble: iri_preamble,
+	questions:[
+		{prompt: "I daydream and fantasize, with some regularity, about things that might happen to me", labels:iri_scale},
+		{prompt: "I often have tender, concerned feelings for people less fortunate than me", labels:iri_scale},
+		{prompt: "I sometimes find it difficult to see things from the \"other guy's\" point of view", labels:iri_scale},
+		{prompt: "Sometimes I don't feel very sorry for other people when they are having problems", labels:iri_scale},
+		{prompt: "I really get involved with the feelings of the characters in a novel", labels:iri_scale},
+		{prompt: "In emergency situations, I feel apprehensive and ill-at-ease", labels:iri_scale},
+		{prompt: "I am usually objective when I watch a movie or play, and I don't often get completely caught up in it", labels:iri_scale}
+	],
+	button_label: "Next"
+}
+
+var iri_part_two = {
+	type: 'survey-likert',
+	preamble: iri_preamble,
+	questions:[
+		{prompt: "I try to look at everybody's side of a disagreement before I make a decision", labels:iri_scale},
+		{prompt: "When I see someone being taken advantage of, I feel kind of protective towards them", labels:iri_scale},
+		{prompt: "I sometimes feel helpless when I am in the middle of a very emotional situation", labels:iri_scale},
+		{prompt: "I sometimes try to understand my friends better by imagining how things look from their perspective", labels:iri_scale},
+		{prompt: "Becoming extremely involved in a good book or movie is somewhat rare for me.", labels:iri_scale},
+		{prompt: "When I see someone get hurt, I tend to remain calm.", labels:iri_scale},
+		{prompt: "Other people's misfortunes do not usually disturb me a great deal", labels:iri_scale}
+	],
+	button_label: "Next"
+}
+
+
+
+var iri_part_three = {
+	type: 'survey-likert',
+	preamble: iri_preamble,
+	questions:[
+		{prompt: "If I'm sure I'm right about something, I don't waste much time listening to other people's arguments", labels:iri_scale},
+		{prompt: "After seeing a play or movie, I have felt as though I were one of the characters", labels:iri_scale},
+		{prompt: "Being in a tense emotional situation scares me", labels:iri_scale},
+		{prompt: "When I see someone being treated unfairly, I sometimes don't feel very much pity for them", labels:iri_scale},
+		{prompt: "I am usually pretty effective in dealing with emergencies", labels:iri_scale},
+		{prompt: "I am often quite touched by things that I see happen", labels:iri_scale},
+		{prompt: "I believe that there are two sides to every question and try to look at them both", labels:iri_scale}
+	],
+	button_label: "Next"
+}
+
+
+var iri_part_four = {
+	type: 'survey-likert',
+	preamble: iri_preamble,
+	questions:[
+		{prompt: "I would describe myself as a pretty soft-hearted person", labels:iri_scale},
+		{prompt: "When I watch a good movie, I can very easily put myself in the place of a leading character", labels:iri_scale},
+		{prompt: "I tend to lose control during emergencies", labels:iri_scale},
+		{prompt: "When I'm upset at someone, I usually try to \"put myself in his shoes\" for a while", labels:iri_scale},
+		{prompt: "When I am reading an interesting story or novel, I imagine how I would feel if the events in the story were happening to me", labels:iri_scale},
+		{prompt: "When I see someone who badly needs help in an emergency, I go to pieces", labels:iri_scale},
+		{prompt: "Before criticizing somebody, I try to imagine how I would feel if I were in their place", labels:iri_scale}
+	],
+	button_label: "Next"
+} 
+
+//save IRI
+
+var save_iri_block = {
+	type: 'call-function',
+	func: function(){
+		var iri_1 = jsPsych.data.get().filter({trial_type:'survey-likert'}).values()[0].responses.split(',');//part_one
+		var iri_2 = jsPsych.data.get().filter({trial_type:'survey-likert'}).values()[1].responses.split(',');//part_two
+		var iri_3 = jsPsych.data.get().filter({trial_type:'survey-likert'}).values()[2].responses.split(',');//part_three
+		var iri_4 = jsPsych.data.get().filter({trial_type:'survey-likert'}).values()[3].responses.split(',');//part_four	
+		
+		var iri_list_1 = new Array();
+		for(i = 0; i<iri_1.length; i++) {
+			iri_list_1[i] = iri_1[i].split(":")[1];
+		}
+		var iri_list_2 = new Array();
+		for(i = 0; i<iri_2.length; i++) {
+			iri_list_2[i] = iri_2[i].split(":")[1];
+		}
+		var iri_list_3 = new Array();
+		for(i = 0; i<iri_3.length; i++) {
+			iri_list_3[i] = iri_3[i].split(":")[1];
+		}
+		var iri_list_4= new Array();
+		for(i = 0; i<iri_4.length; i++) {
+			iri_list_4[i] = iri_4[i].split(":")[1];
+		}
+
+		console.log('iri data 1', iri_list_1);
+		console.log('iri data 2', iri_list_2);
+		console.log('iri data 3', iri_list_3);
+		console.log('iri data 4', iri_list_4);
+
+		var iri_1 = iri_list_1[0],iri_2 = iri_list_1[1],iri_3 = iri_list_1[2],iri_4 = iri_list_1[3],iri_5 = iri_list_1[4],iri_6 = iri_list_1[5],iri_7 = iri_list_1[6];
+		var iri_8 = iri_list_2[0],iri_9 = iri_list_2[1],iri_10 = iri_list_2[2],iri_11 = iri_list_2[3],iri_12 = iri_list_2[4],iri_13 = iri_list_2[5],iri_14 = iri_list_2[6];
+		var iri_15 = iri_list_3[0], iri_16 = iri_list_3[1],iri_17 = iri_list_3[2],iri_18 = iri_list_3[3],iri_19 = iri_list_3[4],iri_20 = iri_list_3[5],iri_21 = iri_list_3[6];
+		var iri_22 = iri_list_4[0], iri_23 = iri_list_4[1], iri_24 = iri_list_4[2], iri_25 = iri_list_4[3], iri_26 = iri_list_4[4], iri_27 = iri_list_4[5], iri_28 = iri_list_4[6];
+
+		//save to server
+		$.ajax({
+			url: 'save_iri.php',
+			method: 'POST',
+			data: {
+				subject: subid,
+				iri_1: iri_1,
+				iri_2: iri_2,
+				iri_3: iri_3,
+				iri_4: iri_4,
+				iri_5: iri_5,
+				iri_6: iri_6,
+				iri_7: iri_7,
+				iri_8: iri_8,
+				iri_9: iri_9,
+				iri_10: iri_10,
+				iri_11: iri_11,
+				iri_12: iri_12,
+				iri_13: iri_13,
+				iri_14: iri_14,
+				iri_15: iri_15,
+				iri_16: iri_16,
+				iri_17: iri_17,
+				iri_18: iri_18,
+				iri_19: iri_19,
+				iri_20: iri_20,
+				iri_21: iri_21,
+				iri_22: iri_22,
+				iri_23: iri_23,
+				iri_24: iri_24,
+				iri_25: iri_25,
+				iri_26: iri_26,
+				iri_27: iri_27,
+				iri_28: iri_28	
+			},
+			success:function(data){
+				alert(data);
+			}
+		})
+
+	}
+}
+
+var debriefing_block = {
+	type: 'external-html',
+	url: 'debriefing.html',
+	cont_btn: 'continue',
+}; 
+
+var score_block
+ = {
+    type: 'html-keyboard-response',
+    stimulus: function(){
+			scoreindollar = score/100/2; 
+			if (scoreindollar<=0){
+				var text = "<br><br><br><br>You did not win additional payment during the experiment.<br><br> \
+				Press any key to continue."; 
+			} else {
+				textscore = scoreindollar.toFixed(2); 
+				var text = "<br><br><br><br>You won an <font color = 'red'> additional $" + textscore + " </font> on top of your regular payment for this HIT.<br><br>\
+				Press any key to continue."; 
+			}
+			return text; 
+		},
+    choices: jsPsych.ALL_KEYS
+};
+
+var end_block = {
+	type: 'external-html',
+	url: 'mturk_code.html',
+	cont_key: 'F'
+}; 
+
+
+
+// create timeline and push 
+var timeline = [];
+timeline.push(change_colors); 
+timeline.push(welcome_block); 
+timeline.push(id_block);
+timeline.push(consent_block); 
+timeline.push(instructions_block_one);
+timeline.push(practice_1_loop);
+timeline.push(multiplayer_practice_block);
+timeline.push(practice_2_loop);
+timeline.push(instructions_final_multiplayer);
+timeline.push(multiplayer_space_loop);
+timeline.push(calculate_bonus);
+timeline.push(save_data_block);
+timeline.push(continue_block);
+timeline.push(iri_part_one);
+timeline.push(iri_part_two);
+timeline.push(iri_part_three);
+timeline.push(iri_part_four);
+timeline.push(save_iri_block);
+timeline.push(demographics_block);
+timeline.push(save_subinfo_block);
+timeline.push(debriefing_block);
+timeline.push(score_block); 
+timeline.push(end_block);
+
+//preload image:
+jsPsych.pluginAPI.preloadImages(images, console.log('images loaded'));
+
+
+// start the experiment 
+
+jsPsych.init({
+	timeline:timeline,
+	on_finish: function() {
+        jsPsych.data.displayData('json');
+    }
+});
+
+</script>
+
+</html>
