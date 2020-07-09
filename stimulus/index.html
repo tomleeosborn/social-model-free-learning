@@ -83,7 +83,6 @@
 /***************************-------------------------******************* */
 	//load social data
 	var social_data = social_data; // works  
-	console.log(social_data);
 	var partner_id = selectPartner(social_data); //works 
 	var partner_data = partnerData(social_data, partner_id); //works 
 	var playing_order = selectPlayingOrder(); //works
@@ -100,9 +99,9 @@
 	}
 
 	// practice data 
-	practice_data = practice_agent_data;//everyone gets to practice with the same agent 
-	practice_id = 'practice_hybrid_agent_1';
-	console.log(practice_data);
+	var practice_id = selectPartner(social_data); //works 
+	var practice_data = partnerData(social_data, practice_id); 
+
 /***************************-------------------------******************* */
 	//jspsych blocks 
 /***************************-------------------------******************* */
@@ -357,7 +356,6 @@ var save_data_block = { //THIS WORKS
 	type: 'call-function',
 	func: function(){
 		var social_data = jsPsych.data.get().filter({trial_type:'social-learning'}).values(); 
-		console.log('data to save: ', social_data);
 		save_data(social_data, "osborn_social_mf_data");
 	}	
 }
@@ -418,7 +416,6 @@ var save_subinfo_block = { //what other data maybe useful to collect?
 			time_elapsed: (new Date()).getTime() - startTime
 		};
 		save_data(subinfo,"osborn_social_mf_demo");
-		console.log('sub info', subinfo);
 	}
 }
 
@@ -554,8 +551,6 @@ var save_iri_block = {
 				iri_28: iri_28	
 		};
 		save_data(iri_data,"osborn_social_mf_iri");
-
-		console.log('iri data', iri_data);
 
 	}
 }

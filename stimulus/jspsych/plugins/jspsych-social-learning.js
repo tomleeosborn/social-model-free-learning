@@ -258,9 +258,6 @@
       var timeouts = 0; 
       
       var controlCenter = function(){
-
-        if (trial.practice == 0) { //LOAD DATA FOR SOCIAL TRIALS
-
           trial.common_prob = trial.social_agent_data[trial.trial_n].common;
           trial.rews1a = trial.social_agent_data[trial.trial_n].rews1a1;
           trial.rews1b = trial.social_agent_data[trial.trial_n].rews1a2;
@@ -272,27 +269,8 @@
           trial.agent_c2 = trial.social_agent_data[trial.trial_n].Action2; 
           trial.agent_re = trial.social_agent_data[trial.trial_n].Re; 
           trial.agent_trial_n = trial.social_agent_data[trial.trial_n].trial_n;
-
-        } else { //LOAD DATA FOR PRACTICE SINGLE TRIALS
-
-          //load data for the current n 
-          trial.common_prob = trial.social_agent_data[trial.trial_n].common;
-          trial.rews1a = trial.social_agent_data[trial.trial_n].rews1a;
-          trial.rews1b = trial.social_agent_data[trial.trial_n].rews1b;
-          trial.rews2a = trial.social_agent_data[trial.trial_n].rews2a;
-          trial.rews2b = trial.social_agent_data[trial.trial_n].rews2b; 
-          // data for social trials
-          trial.agent_c1 = trial.social_agent_data[trial.trial_n].c1; 
-          trial.agent_s2 = trial.social_agent_data[trial.trial_n].s2; 
-          trial.agent_c2 = trial.social_agent_data[trial.trial_n].c2; 
-          trial.agent_re = trial.social_agent_data[trial.trial_n].re; 
-          trial.agent_trial_n = trial.social_agent_data[trial.trial_n].trial_n;
-
-
-        }
-  
       
-  
+
       };
   
       var handleComputerResponse = function(){   
