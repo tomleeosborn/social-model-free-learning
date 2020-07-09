@@ -42,6 +42,20 @@ for i=1:N
         
     if turn(i)==1 %participant turns 
          
+        %SKIP WHEN TIMEOUT 
+         if (c1(i) <1)
+            continue
+        end 
+
+        if (c2(i) <1)
+            continue
+        end 
+
+
+        if (s2(i) <1)
+            continue
+        end 
+        
         %model based update 
         Q_MB(1,:) = T' * max(Q_MB(2:3,:),[],2); 
 
@@ -60,7 +74,7 @@ for i=1:N
             log(sum(exp(beta * Q_MF(s2(i),:))));
 
         %update algorithms
-        delta = max(Q_MF(s2(i), :))- Q_MF(1, c1(i));
+        delta = Q_MF(s2(i), c2(i))- Q_MF(1, c1(i));
         Q_MF(1, c1(i)) = Q_MF(1, c1(i)) + lr * delta;
 
         delta = re(i) - Q_MF(s2(i), c2(i)); 

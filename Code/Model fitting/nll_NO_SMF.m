@@ -72,7 +72,7 @@ for i=1:N
             log(sum(exp(beta * Q_MF(s2(i),:))));
 
         %update algorithms
-        delta = max(Q_MF(s2(i), :))- Q_MF(1, c1(i));
+        delta = Q_MF(s2(i), c2(i))- Q_MF(1, c1(i));
         Q_MF(1, c1(i)) = Q_MF(1, c1(i)) + lr * delta;
 
         delta = re(i) - Q_MF(s2(i), c2(i)); 

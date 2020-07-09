@@ -2,18 +2,18 @@ function wrapper()
 %wrapper: Wrapper function that calculates negative loglikelihoods and
 %AIC scores for different models
 %load data
-path = "study1_social_data.csv"; %data from experiment 2 of Osborn 2020 (Thesis).
+path = "study_main_cleaned.csv"; %data from experiment 2 of Osborn 2020 (Thesis).
 df = readtable(path);
 df = table2array(df);
 
 %columns for indexing
  sub = 1;
- turn_index = 7; 
  act1 = 2; 
  state2=3;
  act2= 4;
  reward = 5;
-
+ turn_index = 6; 
+ 
 %find number of subjects
 numSubs = length(unique(df(:,sub))); 
 
