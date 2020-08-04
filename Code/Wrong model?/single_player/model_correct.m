@@ -24,7 +24,7 @@ re4_list = rews(:,4);
 %initialize Q values 
 Q_MB = zeros(numStates, numActions); 
 Q_MF = zeros(numStates, numActions); 
-likelihood = 0;  
+ 
 
 T =  [.8 .2; .2 .8];
 N = size(rews,1);

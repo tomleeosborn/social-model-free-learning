@@ -62,7 +62,7 @@ for i=1:N
         %mix mb and mf
         Qd = w_MB * Q_MB(1,:) + w_MF * Q_MF(1,:);
 
-        %choose action
+        
          weighted_vals = beta * (Qd +...
              ps * (s1_choices==last_participant_action) + ... %add stickiness
              sigma_ps * (s1_choices==last_social_action)); %add social stickiness
