@@ -18,7 +18,7 @@ rews = get_rewards(numRounds, numStates);
 header_sims = {'sub_id','c1', 's2', 'c2', 're','trial_n'}; 
 header_params = {'sub_id', 'beta','lr','e','ps','w_MB'}; 
 
-csvwrite_with_headers('newdf.agents_correct_model.csv', agents, header_sims);
-csvwrite_with_headers('newdf.agents_correct_model_params.csv', params, header_params);
+csvwrite_with_headers('simulations_3_1_correct_model_agents.csv', agents, header_sims);
+csvwrite_with_headers('simulations_3_1_correct_model_params.csv', params, header_params);
 
 end 

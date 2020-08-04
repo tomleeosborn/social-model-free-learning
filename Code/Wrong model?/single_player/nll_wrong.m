@@ -61,14 +61,14 @@ for i=1:N
         end 
 
         %update algorithms
-        if c1 == 1 
+        if c1(i) == 1 
            delta = Q_MF(s2(i), c2(i)) - Q_MF(1,c1(i)); %sarsa 
         else 
            delta = Q_MF(s2(i), c2(i)+2) - Q_MF(1,c1(i));  
         end 
         Q_MF(1,c1(i)) = Q_MF(1,c1(i)) + lr * delta;  
         
-        if c1 ==1 
+        if c1(i)==1 
             delta = re(i) - Q_MF(s2(i), c2(i)); 
             Q_MF(s2(i), c2(i)) =  Q_MF(s2(i), c2(i)) + lr * delta; 
         else
