@@ -1,4 +1,4 @@
-function [results, store_params] = run_sims_wrong_model(numSubs, numRounds,rews)
+function [results, store_params] = run_sims_wrong_model(numSubs, numRounds,rews,w)
    
 params = zeros(numSubs, 5);
 store_params = zeros(numSubs, 6); %stores params for exporting
@@ -13,7 +13,7 @@ for j=1:numSubs
     beta = rand() * 1.8 + .1;%beta softmax
     lr = rand()/2 + .3;%lr1 from .2 to .7
     elig = rand();%eligibility trace
-    w_MB = rand(); 
+    w_MB = w; 
     ps = 0; %stickiness
     
     params(j,:) = [beta, lr, elig, ps, w_MB];

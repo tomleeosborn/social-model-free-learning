@@ -1,4 +1,4 @@
-function wrapper_fitting_correct_model(file)
+function wrapper_fitting_wrong_model(file)
 %wrapper: Wrapper function that calculates negative loglikelihoods and
 %AIC scores for different models
 
@@ -13,7 +13,7 @@ df = table2array(df);
  state2=3;
  act2= 4;
  reward = 5;
-%  trial_index = 6; 
+%  trial_index = 6;  
  
 %find number of subjects
 numSubs = length(unique(df(:,sub))); 
@@ -21,6 +21,8 @@ numSubs = length(unique(df(:,sub)));
 %other variables
 results1 = zeros(numSubs, 7); 
 results2 = zeros(numSubs, 7); 
+% fit_SIGMA_MF = zeros(numSubs, 2); 
+% fit_NO_SIGMA_MF = zeros(numSubs, 2); 
 
 %Loop through number of subjects
 for j=1:numSubs
@@ -31,6 +33,7 @@ for j=1:numSubs
 %      trial_n = df(df(:,1)==j,trial_index); %turn 
      sub_id = df(df(:,1)==j,sub); %sub_id
      sub_id = unique(sub_id(:));
+     
      
      %optimization functions 
      options = optimoptions('fmincon', 'Display', 'off');
@@ -60,14 +63,14 @@ end
 header_params = {'sub_id', 'beta','lr','e','w_MB','ps','nll'}; 
 header_aic= {'sub_id', 'AIC'}; 
 
-csvwrite_with_headers('simulations_3_1_fit_params_correct_model.csv',...
+csvwrite_with_headers('simulations_3_2_fit_params_correct_model.csv', ...
     results1, header_params);
-csvwrite_with_headers('simulations_3_1_fit_params_wrong_model.csv',...
+csvwrite_with_headers('simulations_3_2_fit_params_wrong_model.csv',...
     results2, header_params);
 
-csvwrite_with_headers('AIC_simulations_3_1_correct_model.csv',...
+csvwrite_with_headers('AIC_simulations_3_2_correct_model.csv',...
     aic_correct_model, header_aic);
-csvwrite_with_headers('AIC_simulations_3_1_wrong_model.csv', ...
+csvwrite_with_headers('AIC_simulations_3_2_wrong_model.csv',...
     aic_wrong_model, header_aic);
 
 end 

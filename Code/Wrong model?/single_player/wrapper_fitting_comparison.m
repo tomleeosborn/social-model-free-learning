@@ -1,9 +1,9 @@
-function wrapper_fitting_wrong()
+function wrapper_fitting_comparison(file)
 %wrapper: Wrapper function that calculates negative loglikelihoods and
 %AIC scores for different models
 
 %load data
-path = "newdf.agents_wrong_model.csv"; %data
+path = file; %data
 df = readtable(path);
 df = table2array(df);
 
@@ -63,10 +63,14 @@ end
 header_params = {'sub_id', 'beta','lr','e','w_MB','ps','nll'}; 
 header_aic= {'sub_id', 'AIC'}; 
 
-csvwrite_with_headers('fit_correct_model_wrong_agent.csv', results1, header_params);
-csvwrite_with_headers('fit_wrong_model_wrong_agent.csv', results2, header_params);
+csvwrite_with_headers('simulations_3_3_fit_params_correct_model.csv', ...
+    results1, header_params);
+csvwrite_with_headers('simulations_3_3_fit_params_wrong_model.csv',...
+    results2, header_params);
 
-csvwrite_with_headers('AIC_correct_model_wrong_agent.csv', aic_correct_model, header_aic);
-csvwrite_with_headers('AIC_wrong_model_wrong_agent.csv', aic_wrong_model, header_aic);
+csvwrite_with_headers('AIC_simulations_3_3_correct_model.csv',...
+    aic_correct_model, header_aic);
+csvwrite_with_headers('AIC_simulations_3_3__wrong_model.csv',...
+    aic_wrong_model, header_aic);
 
 end 
