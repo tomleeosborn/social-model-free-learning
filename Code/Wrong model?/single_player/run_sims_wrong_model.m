@@ -13,7 +13,11 @@ for j=1:numSubs
     beta = rand() * 1.8 + .1;%beta softmax
     lr = rand()/2 + .3;%lr1 from .2 to .7
     elig = rand();%eligibility trace
-    w_MB = w; 
+    if w == 0 
+        w_MB = rand();
+    else 
+        w_MB = 1;
+    end 
     ps = 0; %stickiness
     
     params(j,:) = [beta, lr, elig, ps, w_MB];

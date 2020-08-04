@@ -1,4 +1,4 @@
-function likelihood = nll_wrong(params, c1, s2, c2, re)
+function likelihood = nll_wrong_social(params, c1, s2, c2, re,turn)
 
 %set up variables
 numStates = 3;
@@ -9,8 +9,8 @@ s1_choices = [1 2];
 beta = params(1); %softmax inverse temp
 lr = params(2); %learning rate 1
 e = params(3); %eligibility trace
-ps = 0; %stickiness 
-w_MB = params(4); %model based weight
+ps = params(4); %stickiness 
+w_MB = params(5); %model based weight
 w_MF = 1 - w_MB; 
 
 
@@ -25,6 +25,8 @@ last_participant_action = 0;
 likelihood = 0;
 %Loop through trials
 for i=1:N
+    
+    if turn(i) == 1 % agent turn
          
         %SKIP WHEN TIMEOUT 
          if (c1(i) <1)
@@ -82,6 +84,9 @@ for i=1:N
         Q_MB(2:3,:) = Q_MF(2:3,:);
 
         last_participant_action = c1(i);
+    else
+        continue %in this implementation we just skip the social turns  
+    end 
 
 end 
 

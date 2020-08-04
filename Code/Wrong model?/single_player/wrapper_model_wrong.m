@@ -1,4 +1,4 @@
-function wrapper_model_wrong(w, file)
+function wrapper_model_wrong(w, file1, file2)
 %generates data using for all the models, w is model-based weight
 
 %set up variables 
@@ -18,7 +18,7 @@ rews = get_rewards(numRounds, numStates);
 header_sims = {'sub_id','c1', 's2', 'c2', 're','trial_n'}; 
 header_params = {'sub_id', 'beta','lr','e','ps','w_MB'}; 
 
-csvwrite_with_headers(file, agents, header_sims);
-csvwrite_with_headers('simulations_3_2_wrong_model_params.csv', params, header_params);
+csvwrite_with_headers(file1, agents, header_sims);
+csvwrite_with_headers(file2, params, header_params);
 
 end 

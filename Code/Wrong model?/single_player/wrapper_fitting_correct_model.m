@@ -36,7 +36,7 @@ for j=1:numSubs
      options = optimoptions('fmincon', 'Display', 'off');
      disp(['... Subject: ', num2str(j)]);
      
-     %OPTIMIZE WITH SIGMA_MF
+     %correct model
      [params1, nll1, ~] = fmincon(@ (params1)...
          nll_correct(params1, c1, s2, c2, re),... %does not have ps  
          [1 .5 .5 .4],[],[],[],[],...
@@ -45,7 +45,7 @@ for j=1:numSubs
     [aic_1] = aicbic(nll1, 4); 
     aic_correct_model(j,:) = cat(2, sub_id, aic_1); 
      
-     %OPTIMIZE WITH SIGMA_MF
+     %wrond model
      [params2, nll2, ~] = fmincon(@ (params2)...
          nll_wrong(params2, c1, s2, c2, re),... %does not have ps  
          [1 .5 .5 .4],[],[],[],[],...
