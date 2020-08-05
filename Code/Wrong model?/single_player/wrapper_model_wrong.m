@@ -15,8 +15,10 @@ rews = get_rewards(numRounds, numStates);
 [agents, params] = run_sims_wrong_model(numSub, numRounds,rews,w);  
 
 %save 
-header_sims = {'sub_id','c1', 's2', 'c2', 're','trial_n'}; 
-header_params = {'sub_id', 'beta','lr','e','ps','w_MB'}; 
+header_sims = {'sub_id','c1', 's2', 'c2', 're','trial_n','turn'}; 
+header_params = {'sub_id', 'beta','lr','e','ps','w_MB','sigma_MB',...
+    'sigma_MF', 'sigma_ps'}; 
+
 
 csvwrite_with_headers(file1, agents, header_sims);
 csvwrite_with_headers(file2, params, header_params);

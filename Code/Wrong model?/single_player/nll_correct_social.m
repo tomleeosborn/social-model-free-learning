@@ -12,6 +12,9 @@ e = params(3); %ligibility trace
 ps = params(4); %stickiness 
 w_MB = params(5); %model based weight
 w_MF = 1 - w_MB; 
+sigma_MB = params(6); %social learning model based weight (emulation)
+sigma_MF = params(7); 
+sigma_ps = params(8);  %
 
 
 %initialize Q values 
@@ -22,6 +25,8 @@ T =  [.8 .2; .2 .8];
 N = size(c1,1);
  
 last_participant_action = 0;
+last_social_action = 0;
+
 likelihood = 0; 
 
 %Loop through trials
@@ -49,14 +54,18 @@ for i=1:N
         %mix mb and mf
           Qd = w_MB * Q_MB(1,:) + w_MF * Q_MF(1,:);
         
-        weighted_vals = beta * (Qd +...
-             ps * (s1_choices==last_participant_action));
+         weighted_vals = beta * (Qd +...
+             ps * (s1_choices==last_participant_action) + ... %add stickiness
+             sigma_ps * (s1_choices==last_social_action)); %add social stickiness
 
         %update likelihood 
         likelihood = likelihood + weighted_vals(c1(i)) - ...
             log(sum(exp(weighted_vals))); 
-        likelihood = likelihood + beta * Q_MF(s2(i), c2(i)) -...
-            log(sum(exp(beta * Q_MF(s2(i),:))));
+%         likelihood = likelihood + beta * Q_MF(s2(i), c2(i)) -...
+%             log(sum(exp(beta * Q_MF(s2(i),:))));
+        Qd2 = w_MB * Q_MB(s2(i),:) + w_MF * Q_MF(s2(i),:);
+        likelihood = likelihood + beta * Qd2(c2(i)) - ...
+            log(sum(exp(beta * Qd2)));
 
         %update algorithms
         delta = Q_MF(s2(i), c2(i))- Q_MF(1, c1(i));
@@ -66,14 +75,26 @@ for i=1:N
         Q_MF(s2(i), c2(i)) =  Q_MF(s2(i), c2(i)) + lr * delta; 
         Q_MF(1, c1(i)) = Q_MF(1, c1(i)) + e * lr * delta; 
 
-         %update model based
-        Q_MB(2:3,:) = Q_MF(2:3,:); 
+        %update model based
+        Q_MB(s2(i), c2(i)) =  Q_MB(s2(i), c2(i)) + lr *...
+            (re(i) - Q_MB(s2(i), c2(i))); 
 
         last_participant_action = c1(i);
         
     else 
+        %Update algorithms 
+        delta = Q_MF(s2(i), c2(i))- Q_MF(1, c1(i));
+        Q_MF(1, c1(i)) = Q_MF(1, c1(i)) + lr * delta * sigma_MF;
+
+        delta = re(i) - Q_MF(s2(i), c2(i)); 
+        Q_MF(s2(i), c2(i)) =  Q_MF(s2(i), c2(i)) + lr * delta * sigma_MF; 
+        Q_MF(1, c1(i)) = Q_MF(1, c1(i)) + e * lr * delta * sigma_MF;
+
+        %update model based
+        Q_MB(s2(i), c2(i)) =  Q_MB(s2(i), c2(i)) + lr *...
+            (re(i) - Q_MB(s2(i), c2(i))) * sigma_MB;
         
-        continue %in this implementation we skip updates in the social trials
+        last_social_action = c1(i); 
     end 
 
 end 

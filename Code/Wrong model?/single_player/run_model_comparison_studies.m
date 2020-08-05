@@ -14,8 +14,8 @@ function [results1, results2, aic_correct_model, aic_wrong_model] = ...
 numSubs = length(unique(df(:,sub))); 
 
 %other variables
-results1 = zeros(numSubs, 7); 
-results2 = zeros(numSubs, 7); 
+results1 = zeros(numSubs, 10); 
+results2 = zeros(numSubs, 10); 
 aic_correct_model = zeros(numSubs, 2); 
 aic_wrong_model = zeros(numSubs, 2); 
 
@@ -36,8 +36,8 @@ for j=1:numSubs
      %correct model
      [params1, nll1, ~] = fmincon(@ (params1)...
          nll_correct_social(params1, c1, s2, c2, re, turn),... %does not have ps  
-         [1 .5 .5 2 .4],[],[],[],[],...
-         [.1 0 0 1 0], [1.9 1 1 5 1],[], options); 
+         [1 .5 .5 2 .4 .5 .5 1],[],[],[],[],...
+         [.1 0 0 1 0 0 0 1], [1.9 1 1 5 1 1 1 5],[], options); 
     results1(j,:) = cat(2,sub_id,params1, nll1);      
     [aic_1] = aicbic(nll1, 4); 
     aic_correct_model(j,:) = cat(2, sub_id, aic_1); 
@@ -45,8 +45,8 @@ for j=1:numSubs
      %wrong model
      [params2, nll2, ~] = fmincon(@ (params2)...
          nll_wrong_social(params2, c1, s2, c2, re,turn),... %does not have ps  
-         [1 .5 .5 2 .4],[],[],[],[],...
-         [.1 0 0 1 0], [1.9 1 1 5 1],[], options); 
+         [1 .5 .5 2 .4 .5 .5 1],[],[],[],[],...
+         [.1 0 0 1 0 0 0 1], [1.9 1 1 5 1 1 1 5],[], options);  
     results2(j,:) = cat(2,sub_id,params2,nll2);      
     [aic_2] = aicbic(nll2, 4); 
     aic_wrong_model(j,:) = cat(2, sub_id, aic_2); 

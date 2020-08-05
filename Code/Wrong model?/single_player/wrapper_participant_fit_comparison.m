@@ -3,7 +3,8 @@ function wrapper_participant_fit_comparison(file1, file2)
 %AIC scores for different models
 
 %variables
-header_params = {'sub_id', 'beta','lr','e','ps','w_MB','nll'}; 
+header_params = {'sub_id', 'beta','lr','e','ps','w_MB','sigma_MB',...
+    'sigma_MF', 'sigma_ps','nll'}; 
 header_aic= {'sub_id', 'AIC'}; 
 
 %STUDY 1

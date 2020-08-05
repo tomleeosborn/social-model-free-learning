@@ -12,6 +12,10 @@ e = params(3); %eligibility trace
 ps = params(4); %stickiness 
 w_MB = params(5); %model based weight
 w_MF = 1 - w_MB; 
+sigma_MB = params(6); %social learning model based weight (emulation)
+sigma_MF = params(7); 
+sigma_ps = params(8);  %
+
 
 
 %initialize Q values 
@@ -22,6 +26,8 @@ T =  [.8 .2; .2 .8];
 N = size(c1,1);
  
 last_participant_action = 0;
+last_social_action = 0;
+
 likelihood = 0;
 %Loop through trials
 for i=1:N
@@ -47,21 +53,24 @@ for i=1:N
 
         %mix mb and mf
         Qd = w_MB * Q_MB(1,1:2) + w_MF * Q_MF(1,1:2);
-        
+
         weighted_vals = beta * (Qd +...
-             ps * (s1_choices==last_participant_action));
+            ps * (s1_choices==last_participant_action) + ... %add stickiness
+            sigma_ps * (s1_choices==last_social_action)); %add social stickiness
+
 
         %update likelihood 
         likelihood = likelihood + weighted_vals(c1(i)) - ...
             log(sum(exp(weighted_vals))); 
-        if c1(i) == 1
-            likelihood = likelihood + beta * Q_MF(s2(i), c2(i)) -...
-            log(sum(exp(beta * Q_MF(s2(i),[1 2]))));
+        if s2 == 2 
+            Qd2 = w_MB * Q_MB(s2(i),[1 3]) + w_MF * Q_MF(s2(i), [1 3]);
         else 
-            likelihood = likelihood + beta * Q_MF(s2(i), c2(i)+2) -...
-            log(sum(exp(beta * Q_MF(s2(i),[3 4]))));
+            Qd2 = w_MB * Q_MB(s2(i),[2 4]) + w_MF * Q_MF(s2(i), [2 4]);
         end 
-
+        
+        likelihood = likelihood + beta * Qd2(c2(i)) -...
+            log(sum(exp(beta * Qd2)));
+        
         %update algorithms
         if c1(i) == 1 
            delta = Q_MF(s2(i), c2(i)) - Q_MF(1,c1(i)); %sarsa 
@@ -73,19 +82,36 @@ for i=1:N
         if c1(i)==1 
             delta = re(i) - Q_MF(s2(i), c2(i)); 
             Q_MF(s2(i), c2(i)) =  Q_MF(s2(i), c2(i)) + lr * delta; 
+            Q_MB(s2(i), c2(i)) =  Q_MB(s2(i), c2(i)) + lr * delta;
         else
             delta = re(i) - Q_MF(s2(i), c2(i)+2); 
-            Q_MF(s2(i), c2(i)+2) =  Q_MF(s2(i), c2(i)+2) + lr * delta; 
+            Q_MF(s2(i), c2(i)+2) =  Q_MF(s2(i), c2(i)+2) + lr * delta;
+            Q_MB(s2(i), c2(i)+2) =  Q_MB(s2(i), c2(i)+2) + lr * delta; 
         end 
         Q_MF(1,c1(i)) = Q_MF(1,c1(i)) + e * lr * delta;
-        
-        
-         %update model based
-        Q_MB(2:3,:) = Q_MF(2:3,:);
 
         last_participant_action = c1(i);
     else
-        continue %in this implementation we just skip the social turns  
+      %update algorithms
+        if c1(i) == 1 
+           delta = Q_MF(s2(i), c2(i)) - Q_MF(1,c1(i)); %sarsa 
+        else 
+           delta = Q_MF(s2(i), c2(i)+2) - Q_MF(1,c1(i));  
+        end 
+        Q_MF(1,c1(i)) = Q_MF(1,c1(i)) + lr * delta * sigma_MF;  
+        
+        if c1(i)==1 
+            delta = re(i) - Q_MF(s2(i), c2(i)); 
+            Q_MF(s2(i), c2(i)) =  Q_MF(s2(i), c2(i)) + lr * delta * sigma_MF;
+            Q_MB(s2(i), c2(i)) =  Q_MB(s2(i), c2(i)) + lr * delta * sigma_MB; 
+        else
+            delta = re(i) - Q_MF(s2(i), c2(i)+2); 
+            Q_MF(s2(i), c2(i)+2) =  Q_MF(s2(i), c2(i)+2) + lr * delta * sigma_MF;
+            Q_MB(s2(i), c2(i)+2) =  Q_MB(s2(i), c2(i)+2) + lr * delta * sigma_MB; 
+        end 
+        Q_MF(1,c1(i)) = Q_MF(1,c1(i)) + e * lr * delta;
+        
+       last_social_action = c1(i); 
     end 
 
 end 
