@@ -4,31 +4,37 @@ function wrapper()
 %with social mb and no social mf
 
 %set up variables 
-numSub = 100;
+numSub = 250;
 numRounds = 125; 
 
-%params for model 
-beta = rand() * 1.8 + .1;%beta softmax
-lr = rand()/2 + .3;%lr1 from .2 to .7
-elig = rand();%eligibility trace
-w_MB = rand(); 
-ps = 0; %stickiness
-sigma_ps = 0; %social stickiness 
-[params] = [beta, lr, elig, ps, w_MB, sigma_ps];
 
 %run them all 
-% [sigma_mf] = run_sims(numSub, numRounds,  params, 0, 1); 
-% [sigma_mb] = run_sims(numSub, numRounds, params, 1, 0); 
-% [sigma_mb_mf] = run_sims(numSub, numRounds, params, 1,1); 
-% [no_sigma_mb_mf] = run_sims(numSub, numRounds, params, 0, 0); 
-[all_rand] = run_sims(numSub, numRounds, params, rand(), rand()); 
+[sigma_mf, sigma_mf_params] = run_sims(numSub, numRounds,0, 1); 
+[sigma_mb, sigma_mb_params] = run_sims(numSub, numRounds, 1, 0); 
+[sigma_mb_mf, sigma_mb_mf_params] = run_sims(numSub, numRounds, 1,1); 
+[no_sigma_mb_mf, no_sigma_mb_mf_params] = run_sims(numSub, numRounds, 0, 0); 
+[all_rand, all_rand_params] = run_sims(numSub, numRounds, rand(), rand()); 
 
-%save 
-headers_sims = {'sub_id', 'turn','c1', 's2', 'c2', 're','trial_n','social_agent_id'}; 
-% csvwrite_with_headers('sigma_MF.csv', sigma_mf, headers_sims);
-% csvwrite_with_headers('sigma_MB.csv', sigma_mb, headers_sims);
-% csvwrite_with_headers('sigma_MFMBF.csv', sigma_mb_mf, headers_sims);
-% csvwrite_with_headers('no_sigma.csv', no_sigma_mb_mf, headers_sims);
-csvwrite_with_headers('df_sims.csv', no_sigma_mb_mf, headers_sims);
-csvwrite_with_headers('df_sims.csv', no_sigma_mb_mf, headers_sims)
+%save agent data
+headers_sims = {'sub_id', 'turn','c1', 's2', 'c2', 're','trial_n',...
+    'social_agent_id'}; 
+csvwrite_with_headers('sims1_sigma_MF.csv', sigma_mf, headers_sims);
+csvwrite_with_headers('sims1_sigma_MB.csv', sigma_mb, headers_sims);
+csvwrite_with_headers('sims1_sigma_MFMB.csv', sigma_mb_mf, headers_sims);
+csvwrite_with_headers('sims1__no_sigma_MFMB.csv', no_sigma_mb_mf, headers_sims);
+csvwrite_with_headers('sims1_random_sigma_MFMB.csv', all_rand, headers_sims)
+
+disp('save agent data'); 
+
+%save agent params
+headers_params = {'sub_id','social_agent_id','beta','lr','elig','stickiness',...
+    'w_MB', 'sigma_MB', 'sigma_MF', 'sigma_ps','turn'};
+csvwrite_with_headers('sims1_sigma_MF_params.csv', sigma_mf_params, headers_params);
+csvwrite_with_headers('sims1_sigma_MB_params.csv', sigma_mb_params, headers_params);
+csvwrite_with_headers('sims1_sigma_MFMB_params.csv', sigma_mb_mf_params, headers_params);
+csvwrite_with_headers('sims1__no_sigma_MFMB_params.csv', no_sigma_mb_mf_params, headers_params);
+csvwrite_with_headers('sims1_random_sigma_MFMB_params.csv', all_rand_params, headers_params)
+
+disp('save agent params'); 
+
 end 

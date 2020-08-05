@@ -85,7 +85,7 @@ head(df.sims3.2)
 #visualize 
 df.sims3.2 %>%
   ggplot(aes(x = AIC_score, fill = model)) +
-  geom_histogram( color="#e9ecef", alpha=0.8, position = 'identity', binwidth = 5) + 
+  geom_histogram( color="#e9ecef", alpha=0.8, position = 'identity', binwidth = 2.5) + 
   scale_fill_manual(values=c("#69b3a2", "#404080")) +
   theme_classic() + 
   labs(fill = "Model:",

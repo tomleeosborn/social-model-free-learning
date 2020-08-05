@@ -32,9 +32,6 @@ turn = params(9);
 %initialize Q values 
 Q_MB = zeros(numStates, numActions); 
 Q_MF = zeros(numStates, numActions); 
-likelihood = 0; 
-%last_social_action = 0; 
-%last_participant_action = 0; 
 
 T =  [.8 .2; .8 .2];
 N = size(c1_list,1);
@@ -59,9 +56,6 @@ for i=1:N
         probs = exp(weighted_vals) / sum(exp(weighted_vals)); 
         c1 = s1_choices(randsample(2,1, true, probs)); 
 
-        %update likelihood 
-        likelihood = likelihood + log(probs(s1_choices==c1)); 
-
         %transition 
         s2 = states(randsample(2,1,true,T(c1,:))); 
 
@@ -84,12 +78,9 @@ for i=1:N
                 re = re4_list(i);
             end 
         end
-   
-        %update likelihood
-        likelihood = likelihood + log(probs2(s2_choices==c2)); 
 
         %update algorithms
-        delta = max(Q_MF(s2,:)) - Q_MF(1,c1);
+        delta = Q_MF(s2,c2) - Q_MF(1,c1); %sarsa 
         Q_MF(1,c1) = Q_MF(1,c1) + lr * delta; 
 
         delta = re - Q_MF(s2,c2);  
@@ -109,7 +100,7 @@ for i=1:N
         re = re_list(i); 
 
         %Update algorithms 
-        delta = max(Q_MF(s2, :)) - Q_MF(1, c1); %Q learning 
+        delta = Q_MF(s2,c2) - Q_MF(1,c1); %sarsa  
         Q_MF(1, c1) = Q_MF(1, c1) + lr * delta * sigma_MF; 
 
         delta = re - Q_MF(s2, c2); 

@@ -2,7 +2,6 @@ function [results] = run_random_sims(numSubs, numRounds)
 
 store_params = zeros(numSubs, 11); %stores params for exporting
 results_counter = 0; 
-params = zeros(numSubs,8);
         
 %Loop through subjects 
 for j=1:numSubs
